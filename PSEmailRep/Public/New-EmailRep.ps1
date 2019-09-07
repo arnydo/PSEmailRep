@@ -37,8 +37,11 @@ function New-EmailRep {
     .PARAMETER ApiKey
     Number of hours the email should be considered risky (suspicious=true and blacklisted=true in the QueryResponse). Defaults to no expiration unless account_takeover tag is specified, in which case the default is 14 days.
     
+    .PARAMETER Force
+    Submit report without confirmation prompt.
+
     .EXAMPLE
-    New-EmailRep -Email test_emailrep_xxxxx@foobar.com -Description "Business email compromise" -Tags bec
+    New-EmailRep -Email test_emailrep_xxxxx@foobar.com -Description "Business email compromise" -Tags bec -Force
 
     status 
     ------ 
@@ -49,7 +52,7 @@ function New-EmailRep {
     #>
      
 
-    [Cmdletbinding()]
+    [Cmdletbinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
     
     param(
         [Parameter(Mandatory = $true,
@@ -94,20 +97,32 @@ function New-EmailRep {
             Mandatory = $true
         )]
         [string]
-        $ApiKey
+        $ApiKey,
+
+        [Parameter(
+            HelpMessage = 'Submit report without confirming'
+        )]
+        [switch]
+        $Force
 
         
     )
 
     begin {
 
+        if (-not $PSBoundParameters.ContainsKey('Confirm')) {
+            $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference')
+        }
+        if (-not $PSBoundParameters.ContainsKey('WhatIf')) {
+            $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
+        }
+        
         $baseUrl = "https://emailrep.io/report"
 
         $headers = @{
             "Content-Type" = "application/json"
             'Key'          = $ApiKey
         }
-
     }
 
     process {
@@ -124,9 +139,11 @@ function New-EmailRep {
                     expires     = $Expires
                 } | ConvertTo-Json
 
-                $r = Invoke-WebRequest -Method POST -Uri $baseUrl -Headers $headers -Body $body
+                if ($force -or $PSCmdlet.ShouldProcess($body , "Reporting to EMailRep.io")) {
+                    $r = Invoke-WebRequest -Method POST -Uri $baseUrl -Headers $headers -Body $body
 
-                $r.Content | COnvertFrom-JSON
+                    $r.Content | COnvertFrom-JSON
+                }
             }
             catch {
                 $_.Exception

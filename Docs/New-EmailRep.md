@@ -14,7 +14,7 @@ Submit a new report to EmailRep.io
 
 ```
 New-EmailRep [-Email] <String[]> -Tags <String[]> [-Description <String>] [-Timestamp <Int32>]
- [-Expires <Int32>] -ApiKey <String> [<CommonParameters>]
+ [-Expires <Int32>] -ApiKey <String> [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -25,7 +25,7 @@ Date of malicious activity defaults to the current time unless otherwise specifi
 
 ### EXAMPLE 1
 ```
-New-EmailRep -Email test_emailrep_xxxxx@foobar.com -Description "Business email compromise" -Tags bec
+New-EmailRep -Email test_emailrep_xxxxx@foobar.com -Description "Business email compromise" -Tags bec -Force
 ```
 
 status 
@@ -139,6 +139,52 @@ Parameter Sets: (All)
 Aliases:
 
 Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Force
+Submit report without confirmation prompt.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -WhatIf
+Shows what would happen if the cmdlet runs.
+The cmdlet is not run.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases: wi
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Confirm
+Prompts you for confirmation before running the cmdlet.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases: cf
+
+Required: False
 Position: Named
 Default value: None
 Accept pipeline input: False
