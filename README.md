@@ -62,7 +62,7 @@ Success
 
 ## PSGallery
 ```powershell
-Install-Module -Name PSEmailRep
+Install-Module -Name PSEmailRep -Repository PSGallery
 
 Import-Module -Name PSEmailRep
 ```
