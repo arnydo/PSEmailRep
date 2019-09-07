@@ -60,8 +60,15 @@ Success
 
 # Installing PSEmail
 
-## Clone the repo
+## PSGallery
+```powershell
+Install-Module -Name PSEmailRep
+
+Import-Module -Name PSEmailRep
 ```
+
+## Clone the repo
+```powershell
 git clone https://github.com/arnydo/psemailrep.git
 
 cd psemailrep/psemailrep
