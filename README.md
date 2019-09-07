@@ -55,6 +55,9 @@ Status
 Success
 ```
 
+## Additional Documentation
+[Additional Documentation](/Docs)
+
 # Installing PSEmail
 
 ## Clone the repo
