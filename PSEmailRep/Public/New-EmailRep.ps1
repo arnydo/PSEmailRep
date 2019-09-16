@@ -121,6 +121,13 @@ function New-EmailRep {
             try {
                 Write-Verbose "Attempting to retrieve API Key from encrypted file."
                 $APIKey = Get-EmailRepAPIKey
+
+                Write-Verbose $ApiKey
+
+                if ($null -eq $ApiKey) {
+                    Write-Warning "API Key is not set. Please set APIKey parameter or use 'Set-EmailRep -APIKey'"
+                    throw "API Key not set"
+                }
             }
             catch {
                 Write-Warning "API Key not set and/or could not be retrieved. Please try again..."
@@ -142,16 +149,15 @@ function New-EmailRep {
 
             try {
 
-                $body = [PSCustomObject]@{
+                $Json = [PSCustomObject]@{
                     email       = $EmailAddress
                     tags        = $tags
                     description = $Description
                     timestamp   = $Timestamp
                     expires     = $Expires
-                }
+                } | convertto-Json
 
-                $json = $body | ConvertTo-Json
-                if ($force -or $PSCmdlet.ShouldProcess($body , "Reporting to EMailRep.io")) {
+                if ($force -or $PSCmdlet.ShouldProcess($json , "Reporting to EMailRep.io")) {
                     $response = Invoke-WebRequest -Method POST -Uri $baseUrl -Headers $headers -Body $json
                     $response.Content | ConvertFrom-JSON
                 }
