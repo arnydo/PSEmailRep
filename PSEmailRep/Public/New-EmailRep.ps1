@@ -94,7 +94,7 @@ function New-EmailRep {
         $Expires = 14,
 
         [Parameter(
-            Mandatory = $true
+            Mandatory = $false
         )]
         [string]
         $ApiKey,
@@ -115,6 +115,17 @@ function New-EmailRep {
         }
         if (-not $PSBoundParameters.ContainsKey('WhatIf')) {
             $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
+        }
+
+        if (-not $ApiKey) {
+            try {
+                Write-Verbose "Attempting to retrieve API Key from encrypted file."
+                $APIKey = Get-EmailRepAPIKey
+            }
+            catch {
+                Write-Warning "API Key not set and/or could not be retrieved. Please try again..."
+                return
+            }
         }
         
         $baseUrl = "https://emailrep.io/report"
@@ -137,20 +148,56 @@ function New-EmailRep {
                     description = $Description
                     timestamp   = $Timestamp
                     expires     = $Expires
-                } | ConvertTo-Json
+                }
 
+                $json = $body | ConvertTo-Json
                 if ($force -or $PSCmdlet.ShouldProcess($body , "Reporting to EMailRep.io")) {
-                    $r = Invoke-WebRequest -Method POST -Uri $baseUrl -Headers $headers -Body $body
-
-                    $r.Content | COnvertFrom-JSON
+                    $response = Invoke-WebRequest -Method POST -Uri $baseUrl -Headers $headers -Body $json
+                    $response.Content | ConvertFrom-JSON
                 }
             }
             catch {
-                $_.Exception
+                $errorDetails = $null
+                $response = $_.Exception | Select-Object -ExpandProperty 'message' -ErrorAction Ignore
+                if ($response) {
+                    $errorDetails = $_.ErrorDetails
+                }
+                
+                if ($null -eq $errorDetails) {
+                    Switch ($response) {
+                        'The remote server returned an error: (400) Bad Request.' {
+                            Write-Error -Message 'Bad Request - the account does not comply with an acceptable format.'
+                        }
+                        # Windows PowerShell 401 response
+                        'The remote server returned an error: (401) Unauthorized.' {
+                            Write-Error -Message 'Response status code does not indicate success: 401 (Unauthorized).'
+                        }
+                        # PowerShell Core 401 response
+                        'Response status code does not indicate success: 401 (Unauthorized).' {
+                            Write-Error -Message 'Response status code does not indicate success: 401 (Unauthorized).'
+                        }
+                        'The remote server returned an error: (403) Forbidden.' {
+                            Write-Error -Message 'Forbidden - no user agent has been specified in the request.'
+                        }
+                        # Windows PowerSHell 404 response
+                        'The remote server returned an error: (404) Not Found.' {
+                            # Don't want any output for csv response
+                        }
+                        # PowerShell Core 404 response
+                        'Response status code does not indicate success: 404 (Not Found).' {
+                            # Don't want any output for csv response
+                        }
+                        'The remote server returned an error: (429) Too Many Requests.' {
+                            Write-Error -Message 'Too many requests - the rate limit has been exceeded.'
+                        }
+                    }
+                }
+                else {
+                    Write-error -Message ('Request to "{0}" failed: {1}' -f $baseUrl, $errorDetails)
+                }
             }
 
         }
 
     }
-
 }
