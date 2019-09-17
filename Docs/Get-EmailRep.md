@@ -13,7 +13,7 @@ Query the EmailRep.io API for a report on an email address.
 ## SYNTAX
 
 ```
-Get-EmailRep [-EmailAddress] <String[]> [-Summary] [-Raw] [<CommonParameters>]
+Get-EmailRep [-EmailAddress] <String[]> [-Summary] [-UserAgent <String>] [-Raw] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -115,6 +115,21 @@ Aliases:
 Required: False
 Position: Named
 Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -UserAgent
+Specify the user agent of the web request.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: PSEmailRep Powershell Module
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

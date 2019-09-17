@@ -17,6 +17,9 @@ function Get-EmailRep {
     
     .PARAMETER Raw
     The original API response will be displayed. By default, the 'details' object is not a nested object.
+
+    .PARAMETER UserAgent
+    Specify the user agent of the web request.
     
     .EXAMPLE
     Get-EmailRep -EmailAdress bill@microsoft.com
@@ -96,6 +99,9 @@ function Get-EmailRep {
         [switch]
         $Summary,
 
+        [ValidatePattern('\w')]
+        [string]$UserAgent = "PSEmailRep Powershell Module",
+
         [Parameter(
             HelpMessage = 'Return the raw response returned by the API'
         )]
@@ -126,7 +132,7 @@ function Get-EmailRep {
 
             try {
 
-                $r = Invoke-WebRequest -Method GET -Uri $queryUrl -Headers $headers
+                $r = Invoke-WebRequest -Method GET -Uri $queryUrl -Headers $headers -UserAgent $UserAgent
                 $j = $r.content | ConvertFrom-Json
 
                 switch ( $r.StatusCode ) {
