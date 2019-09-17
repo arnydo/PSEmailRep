@@ -55,6 +55,13 @@ Status
 Success
 ```
 
+## Set-EmailRep
+```powershell
+> Set-EmailRep -APIKey
+
+APIKey: ********************************
+```
+
 ## Additional Documentation
 [Additional Documentation](/Docs)
 

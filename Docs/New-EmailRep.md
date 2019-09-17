@@ -14,7 +14,7 @@ Submit a new report to EmailRep.io
 
 ```
 New-EmailRep [-Email] <String[]> -Tags <String[]> [-Description <String>] [-Timestamp <Int32>]
- [-Expires <Int32>] -ApiKey <String> [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-Expires <Int32>] [-ApiKey <String>] [-UserAgent <String>] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -40,7 +40,7 @@ Email address being reported.
 ```yaml
 Type: String[]
 Parameter Sets: (All)
-Aliases:
+Aliases: EmailAddress
 
 Required: True
 Position: 1
@@ -138,9 +138,24 @@ Type: String
 Parameter Sets: (All)
 Aliases:
 
-Required: True
+Required: False
 Position: Named
 Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -UserAgent
+{{ Fill UserAgent Description }}
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: PSEmailRep Powershell Module
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

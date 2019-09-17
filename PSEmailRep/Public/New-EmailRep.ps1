@@ -62,6 +62,7 @@ function New-EmailRep {
             HelpMessage = 'Email address to query'
         )]
         [ValidatePattern('^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$')]
+        [Alias('EmailAddress')]
         [string[]]
         $Email,
 
@@ -94,10 +95,13 @@ function New-EmailRep {
         $Expires = 14,
 
         [Parameter(
-            Mandatory = $true
+            Mandatory = $false
         )]
         [string]
         $ApiKey,
+
+        [ValidatePattern('\w')]
+        [string]$UserAgent = "PSEmailRep Powershell Module",
 
         [Parameter(
             HelpMessage = 'Submit report without confirming'
@@ -116,6 +120,27 @@ function New-EmailRep {
         if (-not $PSBoundParameters.ContainsKey('WhatIf')) {
             $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
         }
+
+        if (-not $ApiKey) {
+
+            # Try and retrieve API Key stored in AppData
+            try {
+                Write-Verbose "Attempting to retrieve API Key from encrypted file."
+                
+                $APIKey = Get-EmailRepAPIKey
+
+                Write-Verbose "API Key found!"
+
+                if ($null -eq $ApiKey) {
+                    Write-Warning "API Key is not set. Please set APIKey parameter or use 'Set-EmailRep -APIKey'"
+                    throw "API Key not set"
+                }
+            }
+            catch {
+                Write-Warning "API Key not set and/or could not be retrieved. Please try again..."
+                break
+            }
+        }
         
         $baseUrl = "https://emailrep.io/report"
 
@@ -131,26 +156,58 @@ function New-EmailRep {
 
             try {
 
-                $body = [PSCustomObject]@{
+                $Json = [PSCustomObject]@{
                     email       = $EmailAddress
                     tags        = $tags
                     description = $Description
                     timestamp   = $Timestamp
                     expires     = $Expires
-                } | ConvertTo-Json
+                } | convertto-Json
 
-                if ($force -or $PSCmdlet.ShouldProcess($body , "Reporting to EMailRep.io")) {
-                    $r = Invoke-WebRequest -Method POST -Uri $baseUrl -Headers $headers -Body $body
-
-                    $r.Content | COnvertFrom-JSON
+                if ($force -or $PSCmdlet.ShouldProcess($json , "Reporting to EMailRep.io")) {
+                    $response = Invoke-WebRequest -Method POST -Uri $baseUrl -Headers $headers -Body $json -UserAgent $UserAgent
+                    $response.Content | ConvertFrom-JSON
                 }
             }
             catch {
-                $_.Exception
+                $errorDetails = $null
+                $response = $_.Exception | Select-Object -ExpandProperty 'message' -ErrorAction Ignore
+                if ($response) {
+                    $errorDetails = $_.ErrorDetails
+                }
+                
+                if ($null -eq $errorDetails) {
+                    Switch ($response) {
+                        'The remote server returned an error: (400) Bad Request.' {
+                            Write-Error -Message 'Bad Request - the account does not comply with an acceptable format.'
+                        }
+                        # Windows PowerShell 401 response
+                        'The remote server returned an error: (401) Unauthorized.' {
+                            Write-Error -Message 'Response status code does not indicate success: 401 (Unauthorized).'
+                        }
+                        # PowerShell Core 401 response
+                        'Response status code does not indicate success: 401 (Unauthorized).' {
+                            Write-Error -Message 'Response status code does not indicate success: 401 (Unauthorized).'
+                        }
+                        'The remote server returned an error: (403) Forbidden.' {
+                            Write-Error -Message 'Forbidden - no user agent has been specified in the request.'
+                        }
+                        # Windows PowerSHell 404 response
+                        'The remote server returned an error: (404) Not Found.' {
+                            Write-Error -Message 'Path not found.'
+                        }
+                        # PowerShell Core 404 response
+                        'Response status code does not indicate success: 404 (Not Found).' {
+                            Write-Error -Message 'Path not found.'
+                        }
+                    }
+                }
+                else {
+                    Write-error -Message ('Request to "{0}" failed: {1}' -f $baseUrl, $errorDetails)
+                }
             }
 
         }
 
     }
-
 }
