@@ -62,6 +62,7 @@ function New-EmailRep {
             HelpMessage = 'Email address to query'
         )]
         [ValidatePattern('^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$')]
+        [Alias('EmailAddress')]
         [string[]]
         $Email,
 
@@ -99,6 +100,9 @@ function New-EmailRep {
         [string]
         $ApiKey,
 
+        [ValidatePattern('\w')]
+        [string]$UserAgent = "PSEmailRep Powershell Module",
+
         [Parameter(
             HelpMessage = 'Submit report without confirming'
         )]
@@ -118,11 +122,14 @@ function New-EmailRep {
         }
 
         if (-not $ApiKey) {
+
+            # Try and retrieve API Key stored in AppData
             try {
                 Write-Verbose "Attempting to retrieve API Key from encrypted file."
+                
                 $APIKey = Get-EmailRepAPIKey
 
-                Write-Verbose $ApiKey
+                Write-Verbose "API Key found!"
 
                 if ($null -eq $ApiKey) {
                     Write-Warning "API Key is not set. Please set APIKey parameter or use 'Set-EmailRep -APIKey'"
@@ -131,7 +138,7 @@ function New-EmailRep {
             }
             catch {
                 Write-Warning "API Key not set and/or could not be retrieved. Please try again..."
-                return
+                break
             }
         }
         
@@ -158,7 +165,7 @@ function New-EmailRep {
                 } | convertto-Json
 
                 if ($force -or $PSCmdlet.ShouldProcess($json , "Reporting to EMailRep.io")) {
-                    $response = Invoke-WebRequest -Method POST -Uri $baseUrl -Headers $headers -Body $json
+                    $response = Invoke-WebRequest -Method POST -Uri $baseUrl -Headers $headers -Body $json -UserAgent $UserAgent
                     $response.Content | ConvertFrom-JSON
                 }
             }
@@ -187,14 +194,11 @@ function New-EmailRep {
                         }
                         # Windows PowerSHell 404 response
                         'The remote server returned an error: (404) Not Found.' {
-                            # Don't want any output for csv response
+                            Write-Error -Message 'Path not found.'
                         }
                         # PowerShell Core 404 response
                         'Response status code does not indicate success: 404 (Not Found).' {
-                            # Don't want any output for csv response
-                        }
-                        'The remote server returned an error: (429) Too Many Requests.' {
-                            Write-Error -Message 'Too many requests - the rate limit has been exceeded.'
+                            Write-Error -Message 'Path not found.'
                         }
                     }
                 }

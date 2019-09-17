@@ -31,8 +31,8 @@ function Set-EmailRep {
 
     if ($APIKey) {
         try {
-            if (-not (Test-Path $env:appdata\PSEmailRep)) {
-                New-Item -Path $env:appdata -Name PSEmailRep -ItemType Directory
+            if (-not (Test-Path $env:appdata\PSEmailRep\api.txt)) {
+                New-Item -Path $env:appdata -Name PSEmailRep -ItemType Directory -Force | Out-Null
             }
             else {
                 Write-Warning "API Key already configured. Overwrite existing?"

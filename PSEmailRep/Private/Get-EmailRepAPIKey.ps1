@@ -4,7 +4,7 @@ function Get-EmailRepAPIKey {
     Private function to retrieve encrypted API Key.
     
     .DESCRIPTION
-    Private fundtion to retrieve encrypted API Key in user's AppData.
+    Private function to retrieve encrypted API Key in user's AppData.
     
     .EXAMPLE
     Get-EmailRepAPIKey
@@ -22,6 +22,9 @@ function Get-EmailRepAPIKey {
     }
     catch {
         
+    }
+    end {
+        Write-Verbose "Complete"
     }
 }
 
