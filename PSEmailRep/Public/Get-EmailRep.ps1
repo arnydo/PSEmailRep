@@ -14,12 +14,18 @@ function Get-EmailRep {
     
     .PARAMETER Summary
     When set to $true, a summary about the email address will be returned.
+
+    .PARAMETER APIKey
+    API key to authenticate against api.
     
     .PARAMETER Raw
     The original API response will be displayed. By default, the 'details' object is not a nested object.
 
     .PARAMETER UserAgent
     Specify the user agent of the web request.
+
+    .PARAMETER APIStatus
+    Return current query quota status. Daily or Monthly based on type of API key being used.
     
     .EXAMPLE
     Get-EmailRep -EmailAdress bill@microsoft.com
@@ -65,6 +71,12 @@ function Get-EmailRep {
                 valid_mx=True; spoofable=False; spf_strict=True; dmarc_enforced=True; profiles=System.Object[]}
 
     .EXAMPLE
+    Get-EmailRep -EmailAdress bill@microsoft.com -APIStatus
+
+    Daily queries remaining: 92
+    ...
+    
+    .EXAMPLE
     "bill@microsoft.com" | Get-EmailRep
 
     .EXAMPLE
@@ -99,6 +111,12 @@ function Get-EmailRep {
         [switch]
         $Summary,
 
+        [Parameter(
+            Mandatory = $false
+        )]
+        [string]
+        $ApiKey,
+
         [ValidatePattern('\w')]
         [string]$UserAgent = "PSEmailRep Powershell Module",
 
@@ -106,15 +124,56 @@ function Get-EmailRep {
             HelpMessage = 'Return the raw response returned by the API'
         )]
         [switch]
-        $Raw
+        $Raw,
+        [Parameter(
+            HelpMessage = 'Return the current status of rate-limit quota'
+        )]
+        [switch]$APIStatus
     )
 
     begin {
 
+        if (-not $ApiKey) {
+
+            # Try and retrieve API Key stored in AppData
+            try {
+                Write-Verbose "Attempting to retrieve API Key from encrypted file."
+                
+                $APIKey = Get-EmailRepAPIKey
+
+                Write-Verbose "API Key found!"
+
+                if ($null -eq $ApiKey) {
+                    Write-Warning "API Key is not set. Please set APIKey parameter or use 'Set-EmailRep -APIKey'"
+                }
+            }
+            catch {
+                Write-Warning "API Key not set and/or could not be retrieved. Please try again..."
+                Write-Error $_.Exception.Message
+
+                break
+            }
+        }
+
         $baseUrl = "https://emailrep.io"
 
-        $headers = @{
-            "Accept" = "application/json"
+        switch ($ApiKey) {
+            $null {
+                $headers = @{
+                    "Accept" = "application/json"
+                }
+            }
+            '' {
+                $headers = @{
+                    "Accept" = "application/json"
+                }
+            }
+            default {
+                $headers = @{
+                    "Accept" = "application/json"
+                    "Key"    = $ApiKey
+                }
+            }
         }
 
     }
@@ -144,37 +203,46 @@ function Get-EmailRep {
 
                 if ($r.StatusCode -ne 200) {
                     Write-Host $Status
-                    break
+                    throw
+                }
+
+
+                if ($raw) {
+                    return $j
+                }
+                else {
+                
+                    $report = [PSCustomObject]@{
+                        email      = $j.email
+                        reputation = $j.reputation
+                        suspicious = $j.suspicious
+                        references = $j.references
+
+                    }
+
+                    if ($Summary) {
+                        $report | Add-Member -MemberType NoteProperty -Name 'summary' -Value $j.summary
+                    }
+
+                    foreach ($p in $j.details.psobject.properties) {
+                        $report | Add-Member -MemberType NoteProperty -Name $p.Name -Value $p.Value
+                    }
+
+                    if ($APIStatus) {
+                        if ($r.headers['X-Rate-Limit-Daily-Remaining']) {
+                            Write-Host -ForegroundColor Yellow "Daily queries remaining: $($r.headers['X-Rate-Limit-Daily-Remaining'])"
+                        }
+                        if ($r.headers['X-Rate-Limit-Monthly-Remaining']) {
+                            Write-Host -ForegroundColor Yellow "Monthly queries remaining: $($r.headers['X-Rate-Limit-Daily-Remaining'])"
+                        }
+                    }
+
+                    return $report
                 }
             }
             catch {
                 $_.Exception
             }
-
-            if ($raw) {
-                return $j
-            }
-            else {
-                
-                $report = [PSCustomObject]@{
-                    email      = $j.email
-                    reputation = $j.reputation
-                    suspicious = $j.suspicious
-                    references = $j.references
-
-                }
-
-                if ($Summary) {
-                    $report | Add-Member -MemberType NoteProperty -Name 'summary' -Value $j.summary
-                }
-
-                foreach ($p in $j.details.psobject.properties) {
-                    $report | Add-Member -MemberType NoteProperty -Name $p.Name -Value $p.Value
-                }
-
-                return $report
-            }
-
         }
 
     }

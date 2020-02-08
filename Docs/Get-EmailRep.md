@@ -13,7 +13,8 @@ Query the EmailRep.io API for a report on an email address.
 ## SYNTAX
 
 ```
-Get-EmailRep [-EmailAddress] <String[]> [-Summary] [-UserAgent <String>] [-Raw] [<CommonParameters>]
+Get-EmailRep [-EmailAddress] <String[]> [-Summary] [-ApiKey <String>] [-UserAgent <String>] [-Raw] [-APIStatus]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -74,10 +75,18 @@ details    : @{blacklisted=False; malicious_activity=False; malicious_activity_r
 
 ### EXAMPLE 3
 ```
+Get-EmailRep -EmailAdress bill@microsoft.com -APIStatus
+```
+
+Daily queries remaining: 92
+...
+
+### EXAMPLE 4
+```
 "bill@microsoft.com" | Get-EmailRep
 ```
 
-### EXAMPLE 4
+### EXAMPLE 5
 ```
 "bill@microsoft.com","john@microsoft.com" | Get-EmailRep | ft email,reputation,credentials_leaked
 ```
@@ -119,6 +128,21 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -ApiKey
+API key to authenticate against api.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -UserAgent
 Specify the user agent of the web request.
 
@@ -137,6 +161,22 @@ Accept wildcard characters: False
 ### -Raw
 The original API response will be displayed.
 By default, the 'details' object is not a nested object.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -APIStatus
+Return current query quota status.
+Daily or Monthly based on type of API key being used.
 
 ```yaml
 Type: SwitchParameter
