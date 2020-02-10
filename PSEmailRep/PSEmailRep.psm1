@@ -1,3 +1,8 @@
+#Set variables for module
+
+$script:Version = "1.2.1"
+$script:DefaultUA = "PSEmailRep/{0}" -f $script:Version
+
 #Get public and private function definition files.
 $Public  = @( Get-ChildItem -Path $PSScriptRoot\Public\*.ps1 -ErrorAction SilentlyContinue )
 $Private = @( Get-ChildItem -Path $PSScriptRoot\Private\*.ps1 -ErrorAction SilentlyContinue )

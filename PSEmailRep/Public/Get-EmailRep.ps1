@@ -22,7 +22,7 @@ function Get-EmailRep {
     The original API response will be displayed. By default, the 'details' object is not a nested object.
 
     .PARAMETER UserAgent
-    Specify the user agent of the web request.
+    Specify the user agent of the web request. Defaults to "PSEmailRep/*.*.*"
 
     .PARAMETER APIStatus
     Return current query quota status. Daily or Monthly based on type of API key being used.
@@ -118,7 +118,7 @@ function Get-EmailRep {
         $ApiKey,
 
         [ValidatePattern('\w')]
-        [string]$UserAgent = "PSEmailRep Powershell Module",
+        [string]$UserAgent = $script:DefaultUA,
 
         [Parameter(
             HelpMessage = 'Return the raw response returned by the API'

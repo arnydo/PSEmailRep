@@ -146,7 +146,8 @@ Accept wildcard characters: False
 ```
 
 ### -UserAgent
-{{ Fill UserAgent Description }}
+Specify the user agent of the web request.
+Defaults to "PSEmailRep/*.*.*"
 
 ```yaml
 Type: String
@@ -155,7 +156,7 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: PSEmailRep Powershell Module
+Default value: $Script:DefaultUA
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

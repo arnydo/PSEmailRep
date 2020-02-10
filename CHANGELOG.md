@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Updated
+- UserAgent to reflect proper [RFC7231](https://tools.ietf.org/html/rfc7231#section-5.5.3) UA naming ("PSEmailRep/\*.\*.\*")
+
+
 ## [1.2.0] - 2020-02-07
 ### Added
 - API authentication for `Get-EmailRep`

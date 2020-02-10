@@ -37,6 +37,9 @@ function New-EmailRep {
     .PARAMETER ApiKey
     Number of hours the email should be considered risky (suspicious=true and blacklisted=true in the QueryResponse). Defaults to no expiration unless account_takeover tag is specified, in which case the default is 14 days.
     
+    .PARAMETER UserAgent
+    Specify the user agent of the web request. Defaults to "PSEmailRep/*.*.*"
+
     .PARAMETER Force
     Submit report without confirmation prompt.
 
@@ -101,7 +104,7 @@ function New-EmailRep {
         $ApiKey,
 
         [ValidatePattern('\w')]
-        [string]$UserAgent = "PSEmailRep Powershell Module",
+        [string]$UserAgent = $Script:DefaultUA,
 
         [Parameter(
             HelpMessage = 'Submit report without confirming'
