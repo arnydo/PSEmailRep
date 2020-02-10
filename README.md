@@ -1,3 +1,7 @@
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
+[![PowerShell Gallery](https://img.shields.io/powershellgallery/v/PSEmailRep.svg)](https://www.powershellgallery.com/packages/PSEmailRep)
+[![PowerShell Gallery](https://img.shields.io/powershellgallery/dt/PSEmailRep.svg)](https://www.powershellgallery.com/packages/PSEmailRep)
+
 # PSEmailRep
 
 PSEmailRep is a simple PowerShell module to interface with the EmailRep.io API.
