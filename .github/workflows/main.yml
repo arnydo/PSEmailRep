@@ -13,5 +13,5 @@ jobs:
       run: Get-ChildItem
       shell: pwsh
     - name: Display the path
-      run: build.ps1 -Tasks 'analyze'
+      run: ./build.ps1 -Tasks 'analyze'
       shell: pwsh
