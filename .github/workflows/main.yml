@@ -1,0 +1,16 @@
+name: Publish Module
+
+on: [push]
+
+jobs:
+  test:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Run a multi-line script
+      run: pwsh -command write-output "Hello World!"
+    - name: Display the path
+      run: echo ${env:PATH}
+      shell: pwsh
