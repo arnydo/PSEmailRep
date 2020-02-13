@@ -10,7 +10,8 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Run a multi-line script
-      run: pwsh -command write-output "Hello World!"
+      run: Get-ChildItem
+      shell: pwsh
     - name: Display the path
       run: build.ps1 -Tasks 'analyze'
       shell: pwsh
