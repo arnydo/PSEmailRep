@@ -11,7 +11,7 @@ function Install-Dependency([string] $Name)
     }
 
     if (!(Get-Module -Name $Name -ListAvailable)) {
-        Install-Module -Name $Name -Scope CurrentUser
+        Install-Module -Name $Name -Scope CurrentUser -Confirm:$False -Force
     }
 }
 
