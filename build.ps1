@@ -5,6 +5,7 @@ param(
 function Install-Dependency([string] $Name)
 {
     $policy = Get-PSRepository -Name "PSGallery" | Select-Object -ExpandProperty "InstallationPolicy"
+    Write-Output $Policy
     if($policy -ne "Trusted") {
         Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted
     }
