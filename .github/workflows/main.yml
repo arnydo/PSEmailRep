@@ -12,5 +12,5 @@ jobs:
     - name: Run a multi-line script
       run: pwsh -command write-output "Hello World!"
     - name: Display the path
-      run: echo ${env:PATH}
+      run: build.ps1 -Tasks 'analyze'
       shell: pwsh
