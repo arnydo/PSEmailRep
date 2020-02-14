@@ -1,4 +1,4 @@
-$script:ModuleName = '<%= $PLASTER_PARAM_ModuleName %>'
+$script:ModuleName = 'PSEmailRep'
 
 # Removes all versions of the module from the session before importing
 Get-Module $ModuleName | Remove-Module
@@ -7,7 +7,7 @@ $ModuleBase = Split-Path -Parent $MyInvocation.MyCommand.Path
 
 # For tests in .\Tests subdirectory
 if ((Split-Path $ModuleBase -Leaf) -eq 'Tests') {
-    $ModuleBase = Split-Path $ModuleBase -Parent | Join-Path -ChildPath '<%= $PLASTER_PARAM_ModuleName %>'
+    $ModuleBase = Split-Path $ModuleBase -Parent | Join-Path -ChildPath 'PSEmailRep'
 }
 
 ## This variable is for the VSTS tasks and is to be used for referencing any mock artifacts
