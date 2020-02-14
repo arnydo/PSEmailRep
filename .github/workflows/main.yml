@@ -3,15 +3,24 @@ name: Publish Module
 on: [push]
 
 jobs:
-  test:
-
+  analyze:
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v2
-    - name: Run a multi-line script
-      run: Get-ChildItem
-      shell: pwsh
-    - name: Display the path
+    - name: Analyze the module
       run: ./build.ps1 -Tasks 'analyze'
+      shell: pwsh
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Test the basic functionality
+      run: ./build.ps1 -Tasks 'test'
+      shell: pwsh
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Publish to PSGallery
+      run: ./build.ps1 -Tasks 'deploy'
       shell: pwsh
