@@ -4,7 +4,7 @@ if (-not(Get-Module -ListAvailable -Name "PSScriptAnalyzer")) {
     Install-Module PSScriptAnalyzer -Force -Scope CurrentUser
 }
 
-$script:ModuleName = '<%= $PLASTER_PARAM_ModuleName %>'
+$script:ModuleName = 'PSEmailRep'
 
 $ModuleBase = Split-Path -Parent $MyInvocation.MyCommand.Path
 
@@ -13,7 +13,7 @@ $PesterTestExceptions = Get-Content -Path "$ModuleBase\Project.Exceptions.txt"
 
 # For tests in .\Tests subdirectory
 if ((Split-Path $ModuleBase -Leaf) -eq 'Tests') {
-    $ModuleBase = Split-Path $ModuleBase -Parent | Join-Path -ChildPath '<%= $PLASTER_PARAM_ModuleName %>'
+    $ModuleBase = Split-Path $ModuleBase -Parent | Join-Path -ChildPath 'PSEmailRep'
 }
 
 Describe "PSScriptAnalyzer rule-sets" -Tag Build , ScriptAnalyzer {
