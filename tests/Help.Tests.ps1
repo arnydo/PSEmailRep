@@ -1,4 +1,4 @@
-$script:ModuleName = '<%= $PLASTER_PARAM_ModuleName %>'
+$script:ModuleName = 'PSEmailRep'
 
 # Removes all versions of the module from the session before importing
 Get-Module $ModuleName | Remove-Module
@@ -10,7 +10,7 @@ $FunctionHelpTestExceptions = Get-Content -Path "$ModuleBase\Help.Exceptions.txt
 
 # For tests in .\Tests subdirectory
 if ((Split-Path $ModuleBase -Leaf) -eq 'Tests') {
-    $ModuleBase = Split-Path $ModuleBase -Parent | Join-Path -ChildPath '<%= $PLASTER_PARAM_ModuleName %>'
+    $ModuleBase = Split-Path $ModuleBase -Parent | Join-Path -ChildPath 'PSEmailRep'
 }
 
 $Module = Import-Module $ModuleBase\$ModuleName.psd1 -PassThru -ErrorAction Stop
