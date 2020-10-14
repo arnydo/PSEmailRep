@@ -17,13 +17,14 @@ function New-EmailRep {
     brand_impersonation - Impersonating a well-known brand (e.g. Paypal, Microsoft, Google, etc.)
     browser_exploit - The hosted website serves an exploit
     credential_phishing - Attempting to steal user credentials
-    generic_phishing - Generic phishing, should only be used if others don't apply or a more specific determination can't be made or would be too difficult
+    generic_phishing - Generic phishing, should only be used if others don’t apply or a more specific determination can’t be made or would be too difficult
     malware - Malicious documents and droppers. Can be direct attachments, indirect free file hosting sites or droppers from malicious websites
     scam - Catch-all for scams. Sextortion, payment scams, lottery scams, investment scams, fake bank scams, etc.
     spam - Unsolicited spam or spammy behavior (e.g. forum submissions, unwanted bulk email)
     spoofed - Forged sender email (e.g. the envelope from is different than the header from)
     task_request - Request that the recipient perform a task (e.g. gift card purchase, update payroll, send w-2s, etc.)
     threat_actor - Threat actor/owner of phishing kit
+
     
     .PARAMETER Description
     Additional information and context.
@@ -32,10 +33,10 @@ function New-EmailRep {
     When this activity occurred in UTC. Defaults to now().
     
     .PARAMETER Expires
-    Parameter description
+    Number of hours the email should be considered risky (suspicious=true and blacklisted=true in the QueryResponse). Defaults to no expiration unless account_takeover tag is specified, in which case the default is 14 days.
     
     .PARAMETER ApiKey
-    Number of hours the email should be considered risky (suspicious=true and blacklisted=true in the QueryResponse). Defaults to no expiration unless account_takeover tag is specified, in which case the default is 14 days.
+    API key granting access to EmailRep API.
     
     .PARAMETER UserAgent
     Specify the user agent of the web request. Defaults to "PSEmailRep/*.*.*"
@@ -74,7 +75,18 @@ function New-EmailRep {
             HelpMessage = 'Tags that should be applied'
         )]
         [ValidateSet(
-            'account_takeover', 'bec', 'brand_impersonation', 'browser_exploit', 'credential_phishing', 'generic_phishing', 'malware', 'scam', 'spam', 'spoofed', 'task_request', 'threat_actor'
+            'account_takeover',
+            'bec',
+            'brand_impersonation',
+            'browser_exploit',
+            'credential_phishing',
+            'generic_phishing',
+            'malware',
+            'scam',
+            'spam',
+            'spoofed',
+            'task_request',
+            'threat_actor'
         )]
         [string[]]
         $Tags,
